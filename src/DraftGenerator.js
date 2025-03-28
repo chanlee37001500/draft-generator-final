@@ -113,3 +113,12 @@ export default function DraftGenerator() {
           <h2>기안서 미리보기</h2>
           <textarea
             readOnly
+            style={{ width: "100%", height: "300px" }}
+            value={outputText}
+          />
+          <button onClick={handleDownload}>텍스트 파일 다운로드</button>
+        </div>
+      )}
+    </div>
+  );
+}
