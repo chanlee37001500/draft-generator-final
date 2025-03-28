@@ -7,6 +7,7 @@ export default function DraftGenerator() {
     행사명: "",
     요청사항: "",
     비목: "",
+    예산한도: "",
     업체: "",
     비용: "",
     담당자: "",
@@ -30,7 +31,7 @@ export default function DraftGenerator() {
       return;
     }
 
-    const { 날짜, 과정명, 행사명, 요청사항, 비목, 업체, 비용, 담당자 } = form;
+    const { 날짜, 과정명, 행사명, 요청사항, 비목, 예산한도, 업체, 비용, 담당자 } = form;
     const 비용_clean = 비용.replace(/,/g, "").replace("원", "").trim();
     if (비용_clean && isNaN(비용_clean)) {
       setError("비용은 숫자 형식이어야 합니다. 쉼표 또는 '원' 제거 후 숫자로만 입력해주세요.");
@@ -54,71 +55,26 @@ export default function DraftGenerator() {
   return (
     <div>
       <h1>차량 임차 요청</h1>
-      <p>연수 또는 행사를 위해 외부 차량임차가 필요하신 경우, 아래 <strong>[신청]</strong>란에 요청 정보를 입력해주세요</p>
+      <p>연수 또는 행사를 위해 외부 차량임차가 필요하신 경우,<br />
+        아래 <strong>[신청자 입력]</strong>란에 요청 정보를 입력해주세요
+      </p>
 
-      <h2>[신청]</h2>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-        {["날짜", "과정명", "행사명", "요청사항", "비목"].map((key) => (
-          <div key={key}>
-            <label>
-              <strong>{key}</strong><br />
-              <input
-                type="text"
-                name={key}
-                value={form[key]}
-                onChange={handleChange}
-                style={{
-                  width: "100%",
-                  maxWidth: "300px",
-                  padding: "0.4rem",
-                  borderRadius: "4px",
-                  border: "1px solid #ccc"
-                }}
-              />
-            </label>
-          </div>
-        ))}
-      </div>
-
-      <h2 style={{ marginTop: "2rem" }}>추가 정보</h2>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-        {["업체", "비용", "담당자"].map((key) => (
-          <div key={key}>
-            <label>
-              <strong>{key}</strong><br />
-              <input
-                type="text"
-                name={key}
-                value={form[key]}
-                onChange={handleChange}
-                style={{
-                  width: "100%",
-                  maxWidth: "300px",
-                  padding: "0.4rem",
-                  borderRadius: "4px",
-                  border: "1px solid #ccc"
-                }}
-              />
-            </label>
-          </div>
-        ))}
-      </div>
-
-      <button onClick={handleGenerate}>기안서 작성</button>
-
-      {error && <pre style={{ color: "red" }}>{error}</pre>}
-
-      {outputText && (
-        <div>
-          <h2>기안서 미리보기</h2>
-          <textarea
-            readOnly
-            style={{ width: "100%", height: "300px" }}
-            value={outputText}
-          />
-          <button onClick={handleDownload}>텍스트 파일 다운로드</button>
-        </div>
-      )}
-    </div>
-  );
-}
+      {/* 신청자 입력 영역 */}
+      <div style={{
+        backgroundColor: "#f4f8ff",
+        border: "1px solid #c2d3eb",
+        borderRadius: "8px",
+        padding: "1rem",
+        marginTop: "1rem"
+      }}>
+        <h2>[신청자 입력]</h2>
+        <p style={{ marginTop: "-0.5rem", marginBottom: "1rem", fontSize: "0.95rem", color: "#555" }}>
+          임차를 신청하시는 분이 작성해주세요
+        </p>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr 1fr",
+          gap: "1rem"
+        }}>
+          {["날짜", "과정명", "행사명", "요청사항", "비목", "예산한도"].map((key) => (
+            <div key={key}>
