@@ -1,23 +1,36 @@
 import React, { useState } from "react";
 
 export default function DraftGenerator() {
-  const [inputText, setInputText] = useState("");
+  const [form, setForm] = useState({
+    날짜: "",
+    과정명: "",
+    행사명: "",
+    요청사항: "",
+    비목: "",
+    업체: "",
+    비용: "",
+    담당자: "",
+  });
+
   const [outputText, setOutputText] = useState("");
   const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleGenerate = () => {
     setError("");
     setOutputText("");
 
-    const parts = inputText.split("\t").map((p) => p.trim());
-    if (parts.length !== 8) {
-      setError(
-        "입력값이 8개가 아닙니다.\n날짜, 과정명, 행사명, 요청사항, 비목, 업체, 비용, 담당자 순으로 입력했는지 확인해주세요."
-      );
+    const values = Object.values(form);
+    if (values.some((v) => v.trim() === "")) {
+      setError("모든 항목을 빠짐없이 입력해주세요.");
       return;
     }
 
-    const [날짜, 과정명, 행사명, 요청사항, 비목, 업체, 비용, 담당자] = parts;
+    const { 날짜, 과정명, 행사명, 요청사항, 비목, 업체, 비용, 담당자 } = form;
     const 비용_clean = 비용.replace(/,/g, "").replace("원", "").trim();
     if (비용_clean && isNaN(비용_clean)) {
       setError("비용은 숫자 형식이어야 합니다. 쉼표 또는 '원' 제거 후 숫자로만 입력해주세요.");
@@ -41,12 +54,21 @@ export default function DraftGenerator() {
   return (
     <div>
       <h1>자동 기안서 생성기</h1>
-      <p>아래 칸에 8개 항목을 탭(간격)으로 구분해 붙여넣어 주세요<br />날짜, 과정명, 행사명, 요청사항, 비목, 업체, 비용, 담당자</p>
-      <textarea
-        style={{ width: "100%", height: "100px" }}
-        value={inputText}
-        onChange={(e) => setInputText(e.target.value)}
-      />
+      <p>각 항목을 입력해주세요:</p>
+      {Object.keys(form).map((key) => (
+        <div key={key} style={{ marginBottom: "1rem" }}>
+          <label>
+            <strong>{key}</strong><br />
+            <input
+              type="text"
+              name={key}
+              value={form[key]}
+              onChange={handleChange}
+              style={{ width: "100%", padding: "0.5rem", borderRadius: "4px", border: "1px solid #ccc" }}
+            />
+          </label>
+        </div>
+      ))}
       <button onClick={handleGenerate}>기안서 작성</button>
       {error && <pre style={{ color: "red" }}>{error}</pre>}
       {outputText && (
