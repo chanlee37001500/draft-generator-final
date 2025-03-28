@@ -55,11 +55,12 @@ export default function DraftGenerator() {
   return (
     <div>
       <h1>차량 임차 요청</h1>
-      <p>연수 또는 행사를 위해 외부 차량임차가 필요하신 경우,<br />
+      <p>
+        연수 또는 행사를 위해 외부 차량임차가 필요하신 경우,
+        <br />
         아래 <strong>[신청자 입력]</strong>란에 요청 정보를 입력해주세요
       </p>
 
-      {/* 신청자 입력 영역 */}
       <div style={{
         backgroundColor: "#f4f8ff",
         border: "1px solid #c2d3eb",
@@ -78,3 +79,78 @@ export default function DraftGenerator() {
         }}>
           {["날짜", "과정명", "행사명", "요청사항", "비목", "예산한도"].map((key) => (
             <div key={key}>
+              <label>
+                <strong>{key}</strong><br />
+                <input
+                  type="text"
+                  name={key}
+                  value={form[key]}
+                  onChange={handleChange}
+                  style={{
+                    width: "100%",
+                    padding: "0.4rem",
+                    borderRadius: "4px",
+                    border: "1px solid #ccc"
+                  }}
+                />
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{
+        backgroundColor: "#fff9f2",
+        border: "1px solid #e6cfa8",
+        borderRadius: "8px",
+        padding: "1rem",
+        marginTop: "2rem"
+      }}>
+        <h2>[총무팀 입력]</h2>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr 1fr",
+          gap: "1rem"
+        }}>
+          {["업체", "비용", "담당자"].map((key) => (
+            <div key={key}>
+              <label>
+                <strong>{key}</strong><br />
+                <input
+                  type="text"
+                  name={key}
+                  value={form[key]}
+                  onChange={handleChange}
+                  style={{
+                    width: "100%",
+                    padding: "0.4rem",
+                    borderRadius: "4px",
+                    border: "1px solid #ccc"
+                  }}
+                />
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <button onClick={handleGenerate} style={{ marginTop: "2rem" }}>
+        기안서 작성
+      </button>
+
+      {error && <pre style={{ color: "red" }}>{error}</pre>}
+
+      {outputText && (
+        <div>
+          <h2>기안서 미리보기</h2>
+          <textarea
+            readOnly
+            style={{ width: "100%", height: "300px" }}
+            value={outputText}
+          ></textarea>
+          <button onClick={handleDownload}>텍스트 파일 다운로드</button>
+        </div>
+      )}
+    </div>
+  );
+}
