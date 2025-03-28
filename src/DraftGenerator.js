@@ -65,6 +65,7 @@ export default function DraftGenerator() {
     setOutputText(draft);
     setSavedDate(formatToday());
   };
+
   const handleDownload = () => {
     const blob = new Blob([outputText], { type: "text/plain;charset=utf-8" });
     const link = document.createElement("a");
@@ -81,14 +82,14 @@ export default function DraftGenerator() {
         아래 <strong>[신청자 입력]</strong>란에 요청 정보를 입력해주세요
       </p>
 
-      {/* 엑셀 스타일 좌우 정렬 */}
+      {/* 가로 한 줄 정렬: 신청자입력 | 총무팀입력 | 저장 */}
       <div style={{
         display: "flex",
         alignItems: "flex-start",
-        marginTop: "1rem",
-        gap: "1rem"
+        marginTop: "1.5rem",
+        gap: "1.5rem"
       }}>
-        {/* 신청자 입력 필드 */}
+        {/* 신청자 입력 */}
         <div style={{
           backgroundColor: "#f4f8ff",
           border: "1px solid #c2d3eb",
@@ -119,44 +120,17 @@ export default function DraftGenerator() {
           ))}
         </div>
 
-        {/* 저장 버튼 */}
+        {/* 총무팀 입력 */}
         <div style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "flex-start",
-          paddingTop: "1.5rem"
+          backgroundColor: "#fff9f2",
+          border: "1px solid #e6cfa8",
+          borderRadius: "8px",
+          padding: "1rem",
+          width: "280px"
         }}>
-          <button onClick={handleSave} style={{ padding: "0.8rem 1.5rem" }}>저장</button>
-        </div>
-
-        {/* 저장일자 표시 */}
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          height: "100%",
-          fontSize: "0.9rem",
-          color: "#555"
-        }}>
-          {savedDate && <div>저장일자: {savedDate}</div>}
-        </div>
-      </div>
-
-      {/* 총무팀 입력 영역 */}
-      <div style={{
-        backgroundColor: "#fff9f2",
-        border: "1px solid #e6cfa8",
-        borderRadius: "8px",
-        padding: "1rem",
-        marginTop: "2rem"
-      }}>
-        <h2>[총무팀 입력]</h2>
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr 1fr",
-          gap: "1rem"
-        }}>
+          <h2>[총무팀 입력]</h2>
           {["업체", "비용", "담당자"].map((key) => (
-            <div key={key}>
+            <div key={key} style={{ marginBottom: "0.8rem" }}>
               <label>
                 <strong>{key}</strong><br />
                 <input
@@ -175,13 +149,31 @@ export default function DraftGenerator() {
             </div>
           ))}
         </div>
+
+        {/* 저장 버튼 + 날짜 */}
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "1rem",
+          paddingTop: "2rem"
+        }}>
+          <button onClick={handleSave} style={{ padding: "0.8rem 1.5rem" }}>저장</button>
+          {savedDate && (
+            <div style={{ fontSize: "0.9rem", color: "#555" }}>
+              저장일자: {savedDate}
+            </div>
+          )}
+        </div>
       </div>
 
-      {error && <pre style={{ color: "red" }}>{error}</pre>}
+      {/* 오류 메시지 */}
+      {error && <pre style={{ color: "red", marginTop: "1rem" }}>{error}</pre>}
 
+      {/* 출력 결과 */}
       {outputText && (
         <div>
-          <h2>기안서 미리보기</h2>
+          <h2 style={{ marginTop: "2rem" }}>기안서 미리보기</h2>
           <textarea
             readOnly
             style={{ width: "100%", height: "300px" }}
