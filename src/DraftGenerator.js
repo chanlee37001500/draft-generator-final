@@ -15,7 +15,7 @@ export default function DraftGenerator() {
 
   const [outputText, setOutputText] = useState("");
   const [error, setError] = useState("");
-  const [savedDate, setSavedDate] = useState(null); // 저장된 날짜
+  const [savedDate, setSavedDate] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,4 +45,151 @@ export default function DraftGenerator() {
       return;
     }
 
-    const { 날짜, 과정명, 행사명, 요청사항, 비목, 예산한도, 업체, 비용, 담당자 } = form
+    const { 날짜, 과정명, 행사명, 요청사항, 비목, 예산한도, 업체, 비용, 담당자 } = form;
+    const formattedDate = formatDateString(날짜);
+    if (!formattedDate) {
+      setError("날짜는 8자리 숫자 (예: 20250401) 형식으로 입력해주세요.");
+      return;
+    }
+
+    const 비용_clean = 비용.replace(/,/g, "").replace("원", "").trim();
+    if (비용_clean && isNaN(비용_clean)) {
+      setError("비용은 숫자 형식이어야 합니다.");
+      return;
+    }
+
+    const 비용_formatted = 비용_clean ? Number(비용_clean).toLocaleString() : "";
+
+    const draft = `${과정명} ${행사명} 진행을 위한 차량임차\n\n\n연수운영부-   호(202 .  .  .) 요청에 의거 ${과정명} ${행사명} 진행을 위한 차량을 다음과 같이 임차하고자 합니다.\n\n1. 임차내역 : ${요청사항}\n\n2. 임차일정 : ${formattedDate}\n  - 상세내역 [붙임] 참조\n\n3. 소요예산 : ￦${비용_formatted}.- (부가세 포함)\n\n4. 처리비목 : ${비목}\n\n5. 계 약 처 : (주)${업체}\n\n6. 계약방법 : 수의계약 (계약규정 제41조 제1항 제1호에 의거)\n\n7. 기    타\n   가. 계약규정 제4조 제1항 제1호에 의거 계약서 작성을 생략하고 이행각서를 징구하고자 함\n   나. 본 품의로 지출결의에 갈음하고자 함\n\n\n붙       임 : 1. 견적서 각 1부,\n            2. 이행각서(안) 1부,\n            3. 관련 공문 1부, 끝.`;
+
+    setOutputText(draft);
+    setSavedDate(formatToday());
+  };
+  const handleDownload = () => {
+    const blob = new Blob([outputText], { type: "text/plain;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "기안서.txt";
+    link.click();
+  };
+
+  return (
+    <div>
+      <h1>차량 임차 요청</h1>
+      <p>
+        연수 또는 행사를 위해 외부 차량임차가 필요하신 경우,<br />
+        아래 <strong>[신청자 입력]</strong>란에 요청 정보를 입력해주세요
+      </p>
+
+      {/* 엑셀 스타일 좌우 정렬 */}
+      <div style={{
+        display: "flex",
+        alignItems: "flex-start",
+        marginTop: "1rem",
+        gap: "1rem"
+      }}>
+        {/* 신청자 입력 필드 */}
+        <div style={{
+          backgroundColor: "#f4f8ff",
+          border: "1px solid #c2d3eb",
+          borderRadius: "8px",
+          padding: "1rem",
+          width: "280px"
+        }}>
+          <h2>[신청자 입력]</h2>
+          {["날짜", "과정명", "행사명", "요청사항", "비목", "예산한도"].map((key) => (
+            <div key={key} style={{ marginBottom: "0.8rem" }}>
+              <label>
+                <strong>{key}</strong><br />
+                <input
+                  type="text"
+                  name={key}
+                  value={form[key]}
+                  onChange={handleChange}
+                  placeholder={key === "날짜" ? "예: 20250401" : ""}
+                  style={{
+                    width: "100%",
+                    padding: "0.4rem",
+                    borderRadius: "4px",
+                    border: "1px solid #ccc"
+                  }}
+                />
+              </label>
+            </div>
+          ))}
+        </div>
+
+        {/* 저장 버튼 */}
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+          paddingTop: "1.5rem"
+        }}>
+          <button onClick={handleSave} style={{ padding: "0.8rem 1.5rem" }}>저장</button>
+        </div>
+
+        {/* 저장일자 표시 */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          height: "100%",
+          fontSize: "0.9rem",
+          color: "#555"
+        }}>
+          {savedDate && <div>저장일자: {savedDate}</div>}
+        </div>
+      </div>
+
+      {/* 총무팀 입력 영역 */}
+      <div style={{
+        backgroundColor: "#fff9f2",
+        border: "1px solid #e6cfa8",
+        borderRadius: "8px",
+        padding: "1rem",
+        marginTop: "2rem"
+      }}>
+        <h2>[총무팀 입력]</h2>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr 1fr",
+          gap: "1rem"
+        }}>
+          {["업체", "비용", "담당자"].map((key) => (
+            <div key={key}>
+              <label>
+                <strong>{key}</strong><br />
+                <input
+                  type="text"
+                  name={key}
+                  value={form[key]}
+                  onChange={handleChange}
+                  style={{
+                    width: "100%",
+                    padding: "0.4rem",
+                    borderRadius: "4px",
+                    border: "1px solid #ccc"
+                  }}
+                />
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {error && <pre style={{ color: "red" }}>{error}</pre>}
+
+      {outputText && (
+        <div>
+          <h2>기안서 미리보기</h2>
+          <textarea
+            readOnly
+            style={{ width: "100%", height: "300px" }}
+            value={outputText}
+          ></textarea>
+          <button onClick={handleDownload}>텍스트 파일 다운로드</button>
+        </div>
+      )}
+    </div>
+  );
+}
